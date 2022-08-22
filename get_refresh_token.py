@@ -1,9 +1,8 @@
 import os
-from subprocess import Popen
 import warnings
+from subprocess import Popen
 
 from dotenv import dotenv_values
-import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 # Override sample with non-sample file-based env variables,
@@ -27,7 +26,8 @@ if "localhost" in config["REDIRECT_URI"]:
     port = config["REDIRECT_URI"].rstrip("/").split(":")[-1]
     redirect_server = Popen(["python", "-m", "http.server", port])
 
-
+port = config["REDIRECT_URI"].rstrip("/").split(":")[-1]
+redirect_server = Popen(["python", "-m", "http.server", port])
 print(f"1. Open the following link in your browser:\n\n{url}\n")
 print("2. Accept the Spotify authorization.")
 
@@ -40,7 +40,7 @@ with warnings.catch_warnings():
     access_token = auth_manager.get_access_token(response_code)
 
 print(f"Your refresh token is:\n\n{access_token['refresh_token']}\n")
-print(f"Store this as the REFRESH_TOKEN in your environment variables")
+print("Store this as the REFRESH_TOKEN in your environment variables")
 
 if redirect_server is not None:
     redirect_server.terminate()

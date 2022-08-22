@@ -3,10 +3,9 @@ import logging
 import os
 import sys
 
-from dotenv import dotenv_values
 import spotipy
+from dotenv import dotenv_values
 from spotipy.oauth2 import SpotifyOAuth
-
 
 logger = logging.getLogger("discovered-weekly")
 handler = logging.StreamHandler(stream=sys.stdout)
@@ -52,8 +51,7 @@ def load_client(client_id, client_secret, redirect_uri, username, refresh_token)
         username=username,
     )
     auth_manager.refresh_access_token(refresh_token)
-    client = spotipy.Spotify(auth_manager=auth_manager)
-    return client
+    return spotipy.Spotify(auth_manager=auth_manager)
 
 
 def parse_this_week(client, discover_weekly_playlist_id):
@@ -70,6 +68,7 @@ def parse_this_week(client, discover_weekly_playlist_id):
 
 
 def add_to_all_time_playlist(client, dw_uris, all_discovered_playlist_id):
+
     # First, add to the all time DW
 
     # Determine total number of tracks
@@ -80,11 +79,10 @@ def add_to_all_time_playlist(client, dw_uris, all_discovered_playlist_id):
     # If the last 5 tracks match the last 5 from the current week, then we've already added
     # this week's playlist.
     match = len(last_five["items"]) >= 5 and all(
-        [
-            dw_uri == item["track"]["uri"]
-            for dw_uri, item in zip(dw_uris[-5:], last_five["items"])
-        ]
+        dw_uri == item["track"]["uri"]
+        for dw_uri, item in zip(dw_uris[-5:], last_five["items"])
     )
+
     if match:
         logger.info(
             "This script has already been run for this week."
@@ -97,6 +95,7 @@ def add_to_all_time_playlist(client, dw_uris, all_discovered_playlist_id):
 
 def add_to_weekly_archive(client, username, playlist_date, dw_uris):
     # Second, create the weekly archive playlist
+
     this_weeks_playlist = f"Discovered Week {playlist_date}"
 
     # Need to search all user's playlists to see if this one already exists...
@@ -108,9 +107,7 @@ def add_to_weekly_archive(client, username, playlist_date, dw_uris):
     while offset + limit < total and not found:
         playlists = client.user_playlists(username, limit=limit, offset=offset)
         total = playlists["total"]
-        found = any(
-            [item["name"] == this_weeks_playlist for item in playlists["items"]]
-        )
+        found = any(item["name"] == this_weeks_playlist for item in playlists["items"])
         offset += limit
 
     if found:
